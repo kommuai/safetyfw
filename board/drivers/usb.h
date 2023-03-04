@@ -188,12 +188,12 @@ uint16_t string_language_desc[] = {
 // these strings are all uint16's so that we don't need to spam ,0 after every character
 uint16_t string_manufacturer_desc[] = {
   STRING_DESCRIPTOR_HEADER(8),
-  'c', 'o', 'm', 'm', 'a', '.', 'a', 'i'
+  'k', 'o', 'm', 'm', 'u', '.', 'a', 'i'
 };
 
 uint16_t string_product_desc[] = {
-  STRING_DESCRIPTOR_HEADER(5),
-  'p', 'a', 'n', 'd', 'a'
+  STRING_DESCRIPTOR_HEADER(9),
+  'y', 'u', 'y', 'u', 'r', 'm', 'o', 'r', 'i'
 };
 
 // default serial number when we're not a panda

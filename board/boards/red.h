@@ -2,47 +2,16 @@
 // Red Panda + Harness //
 // ///////////////////// //
 
-void red_enable_can_transceiver(uint8_t transceiver, bool enabled) {
-  switch (transceiver) {
-    case 1U:
-      set_gpio_output(GPIOG, 11, !enabled);
-      break;
-    case 2U:
-      set_gpio_output(GPIOB, 3, !enabled);
-      break;
-    case 3U:
-      set_gpio_output(GPIOD, 7, !enabled);
-      break;
-    case 4U:
-      set_gpio_output(GPIOB, 4, !enabled);
-      break;
-    default:
-      break;
-  }
-}
-
-void red_enable_can_transceivers(bool enabled) {
-  uint8_t main_bus = (car_harness_status == HARNESS_STATUS_FLIPPED) ? 3U : 1U;
-  for (uint8_t i=1U; i<=4U; i++) {
-    // Leave main CAN always on for CAN-based ignition detection
-    if (i == main_bus) {
-      red_enable_can_transceiver(i, true);
-    } else {
-      red_enable_can_transceiver(i, enabled);
-    }
-  }
-}
-
 void red_set_led(uint8_t color, bool enabled) {
   switch (color) {
     case LED_RED:
-      set_gpio_output(GPIOE, 4, !enabled);
+      set_gpio_output(GPIOD, 11, !enabled);
       break;
      case LED_GREEN:
-      set_gpio_output(GPIOE, 3, !enabled);
+      set_gpio_output(GPIOD, 10, !enabled);
       break;
     case LED_BLUE:
-      set_gpio_output(GPIOE, 2, !enabled);
+      set_gpio_output(GPIOD, 9, !enabled);
       break;
     default:
       break;
@@ -95,48 +64,8 @@ bool red_check_ignition(void) {
 void red_init(void) {
   common_init_gpio();
 
-  //C10,C11 : OBD_SBU1_RELAY, OBD_SBU2_RELAY
-  set_gpio_output_type(GPIOC, 10, OUTPUT_TYPE_OPEN_DRAIN);
-  set_gpio_pullup(GPIOC, 10, PULL_NONE);
-  set_gpio_mode(GPIOC, 10, MODE_OUTPUT);
-  set_gpio_output(GPIOC, 10, 1);
-
-  set_gpio_output_type(GPIOC, 11, OUTPUT_TYPE_OPEN_DRAIN);
-  set_gpio_pullup(GPIOC, 11, PULL_NONE);
-  set_gpio_mode(GPIOC, 11, MODE_OUTPUT);
-  set_gpio_output(GPIOC, 11, 1);
-
-  // G11,B3,D7,B4: transceiver enable
-  set_gpio_pullup(GPIOG, 11, PULL_NONE);
-  set_gpio_mode(GPIOG, 11, MODE_OUTPUT);
-
-  set_gpio_pullup(GPIOB, 3, PULL_NONE);
-  set_gpio_mode(GPIOB, 3, MODE_OUTPUT);
-
-  set_gpio_pullup(GPIOD, 7, PULL_NONE);
-  set_gpio_mode(GPIOD, 7, MODE_OUTPUT);
-
-  set_gpio_pullup(GPIOB, 4, PULL_NONE);
-  set_gpio_mode(GPIOB, 4, MODE_OUTPUT);
-
-  //B1: 5VOUT_S
-  set_gpio_pullup(GPIOB, 1, PULL_NONE);
-  set_gpio_mode(GPIOB, 1, MODE_ANALOG);
-
-  // B14: usb load switch, enabled by pull resistor on board, obsolete for red panda
-  set_gpio_output_type(GPIOB, 14, OUTPUT_TYPE_OPEN_DRAIN);
-  set_gpio_pullup(GPIOB, 14, PULL_UP);
-  set_gpio_mode(GPIOB, 14, MODE_OUTPUT);
-  set_gpio_output(GPIOB, 14, 1);
-
-  // Initialize harness
-  harness_init();
-
   // Initialize RTC
   rtc_init();
-
-  // Enable CAN transceivers
-  red_enable_can_transceivers(true);
 
   // Disable LEDs
   red_set_led(LED_RED, false);
@@ -146,10 +75,6 @@ void red_init(void) {
   // Set normal CAN mode
   red_set_can_mode(CAN_MODE_NORMAL);
 
-  // flip CAN0 and CAN2 if we are flipped
-  if (car_harness_status == HARNESS_STATUS_FLIPPED) {
-    can_flip_buses(0, 2);
-  }
 }
 
 const harness_configuration red_harness_config = {
@@ -179,8 +104,8 @@ const board board_red = {
   .has_rtc_battery = false,
   .fan_max_rpm = 0U,
   .init = red_init,
-  .enable_can_transceiver = red_enable_can_transceiver,
-  .enable_can_transceivers = red_enable_can_transceivers,
+  .enable_can_transceiver = false,
+  .enable_can_transceivers = false,
   .set_led = red_set_led,
   .set_gps_mode = unused_set_gps_mode,
   .set_can_mode = red_set_can_mode,

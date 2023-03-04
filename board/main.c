@@ -317,69 +317,27 @@ int main(void) {
   clock_init();
   peripherals_init();
   detect_board_type();
-  adc_init();
-
-  // print hello
-  print("\n\n\n************************ MAIN START ************************\n");
-
-  // check for non-supported board types
-  if(hw_type == HW_TYPE_UNKNOWN){
-    print("Unsupported board type\n");
-    while (1) { /* hang */ }
-  }
-
-  print("Config:\n");
-  print("  Board type: "); print(current_board->board_type); print("\n");
+  //adc_init();
 
   // init board
   current_board->init();
 
-  // panda has an FPU, let's use it!
   enable_fpu();
-
-  if (current_board->has_gps) {
-    uart_init(&uart_ring_gps, 9600);
-  } else {
-    // enable ESP uart
-    uart_init(&uart_ring_gps, 115200);
-  }
-
-  if (current_board->has_lin) {
-    // enable LIN
-    uart_init(&uart_ring_lin1, 10400);
-    UART5->CR2 |= USART_CR2_LINEN;
-    uart_init(&uart_ring_lin2, 10400);
-    USART3->CR2 |= USART_CR2_LINEN;
-  }
-
-  if (current_board->fan_max_rpm > 0U) {
-    llfan_init();
-  }
 
   microsecond_timer_init();
 
-  // init to SILENT and can silent
-  set_safety_mode(SAFETY_SILENT, 0U);
-
-  // enable CAN TXs
-  current_board->enable_can_transceivers(true);
+  // init to ALLOUTPUT
+  set_safety_mode(SAFETY_ALLOUTPUT, 0U);
 
   // 8Hz timer
-  REGISTER_INTERRUPT(TICK_TIMER_IRQ, tick_handler, 10U, FAULT_INTERRUPT_RATE_TICK)
-  tick_timer_init();
+  //REGISTER_INTERRUPT(TICK_TIMER_IRQ, tick_handler, 10U, FAULT_INTERRUPT_RATE_TICK)
+  //tick_timer_init();
 
 #ifdef DEBUG
   print("DEBUG ENABLED\n");
 #endif
   // enable USB (right before interrupts or enum can fail!)
   usb_init();
-
-#ifdef ENABLE_SPI
-  if (current_board->has_spi) {
-    spi_init();
-  }
-#endif
-
   print("**** INTERRUPTS ON ****\n");
   enable_interrupts();
 
@@ -387,53 +345,32 @@ int main(void) {
   uint64_t cnt = 0;
 
   for (cnt=0;;cnt++) {
-    if (power_save_status == POWER_SAVE_STATUS_DISABLED) {
-      #ifdef DEBUG_FAULTS
-      if (fault_status == FAULT_STATUS_NONE) {
-      #endif
-        // useful for debugging, fade breaks = panda is overloaded
-        for (uint32_t fade = 0U; fade < MAX_LED_FADE; fade += 1U) {
-          current_board->set_led(LED_RED, true);
-          delay(fade >> 4);
-          current_board->set_led(LED_RED, false);
-          delay((MAX_LED_FADE - fade) >> 4);
-        }
-
-        for (uint32_t fade = MAX_LED_FADE; fade > 0U; fade -= 1U) {
-          current_board->set_led(LED_RED, true);
-          delay(fade >> 4);
-          current_board->set_led(LED_RED, false);
-          delay((MAX_LED_FADE - fade) >> 4);
-        }
-
-      #ifdef DEBUG_FAULTS
-      } else {
-          current_board->set_led(LED_RED, 1);
-          delay(512000U);
-          current_board->set_led(LED_RED, 0);
-          delay(512000U);
-        }
-      #endif
-    } else {
-      if (deepsleep_allowed && !usb_enumerated && !check_started() && ignition_seen && (heartbeat_counter > 20U)) {
-        usb_soft_disconnect(true);
-        fan_set_power(0U);
-        NVIC_DisableIRQ(TICK_TIMER_IRQ);
-        delay(512000U);
-
-        // Init IRQs for CAN transceiver and ignition line
-        exti_irq_init();
-
-        // Init RTC Wakeup event on EXTI22
-        REGISTER_INTERRUPT(RTC_WKUP_IRQn, RTC_WKUP_IRQ_Handler, 10U, FAULT_INTERRUPT_RATE_EXTI)
-        rtc_wakeup_init();
-
-        // STOP mode
-        SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+    #ifdef DEBUG_FAULTS
+    if (fault_status == FAULT_STATUS_NONE) {
+    #endif
+      // useful for debugging, fade breaks = panda is overloaded
+      for (uint32_t fade = 0U; fade < MAX_LED_FADE; fade += 1U) {
+        current_board->set_led(LED_RED, true);
+        delay(fade >> 4);
+        current_board->set_led(LED_RED, false);
+        delay((MAX_LED_FADE - fade) >> 4);
       }
-      __WFI();
-      SCB->SCR &= ~SCB_SCR_SLEEPDEEP_Msk;
-    }
+
+      for (uint32_t fade = MAX_LED_FADE; fade > 0U; fade -= 1U) {
+        current_board->set_led(LED_RED, true);
+        delay(fade >> 4);
+        current_board->set_led(LED_RED, false);
+        delay((MAX_LED_FADE - fade) >> 4);
+      }
+
+    #ifdef DEBUG_FAULTS
+    } else {
+        current_board->set_led(LED_RED, 1);
+        delay(512000U);
+        current_board->set_led(LED_RED, 0);
+        delay(512000U);
+      }
+    #endif
   }
 
   return 0;

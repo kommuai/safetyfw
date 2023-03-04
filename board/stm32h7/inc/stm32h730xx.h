@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file    stm32h735xx.h
+  * @file    stm32h730xx.h
   * @author  MCD Application Team
-  * @brief   CMSIS STM32H735xx Device Peripheral Access Layer Header File.
+  * @brief   CMSIS STM32H730xx Device Peripheral Access Layer Header File.
   *
   *          This file contains:
   *           - Data structures and the address mapping for all peripherals
@@ -27,12 +27,12 @@
   * @{
   */
 
-/** @addtogroup stm32h735xx
+/** @addtogroup stm32h730xx
   * @{
   */
 
-#ifndef STM32H735xx_H
-#define STM32H735xx_H
+#ifndef STM32H730xx_H
+#define STM32H730xx_H
 
 #ifdef __cplusplus
  extern "C" {
@@ -209,7 +209,6 @@ typedef enum
   * @{
   */
 
-#define SMPS       /*!< Switched mode power supply feature */
 
 
 
@@ -2162,7 +2161,7 @@ typedef struct
 #define D1_ITCMRAM_BASE           (0x00000000UL) /*!< Base address of : 64KB RAM reserved for CPU execution/instruction accessible over ITCM  */
 #define D1_ITCMICP_BASE           (0x00100000UL) /*!< Base address of : (up to 128KB) embedded Test FLASH memory accessible over ITCM         */
 #define D1_DTCMRAM_BASE           (0x20000000UL) /*!< Base address of : 128KB system data RAM accessible over DTCM                            */
-#define D1_AXIFLASH_BASE          (0x08000000UL) /*!< Base address of : (up to 1 MB) embedded FLASH memory accessible over AXI                */
+#define D1_AXIFLASH_BASE          (0x08000000UL) /*!< Base address of : (up to 128 KB) embedded FLASH memory accessible over AXI      */
 #define D1_AXIICP_BASE            (0x1FF00000UL) /*!< Base address of : (up to 128KB) embedded Test FLASH memory accessible over AXI          */
 #define D1_AXISRAM1_BASE           (0x24000000UL) /*!< Base address of : (up to 128KB) system data RAM1 accessible over over AXI                */
 #define D1_AXISRAM2_BASE           (0x24020000UL) /*!< Base address of : (up to 192KB) system data RAM2 accessible over over AXI to be shared with ITCM (64K granularity)  */
@@ -2179,8 +2178,8 @@ typedef struct
 #define OCTOSPI1_BASE             (0x90000000UL) /*!< Base address of : OCTOSPI1 memories  accessible over AXI                                 */
 #define OCTOSPI2_BASE             (0x70000000UL) /*!< Base address of : OCTOSPI2 memories  accessible over AXI                                 */
 
-#define FLASH_BANK1_BASE          (0x08000000UL) /*!< Base address of : (up to 1 MB) Flash Bank1 accessible over AXI                          */
-#define FLASH_END                 (0x080FFFFFUL) /*!< FLASH end address                                                                       */
+#define FLASH_BANK1_BASE          (0x08000000UL) /*!< Base address of : (up to 128 KB) Flash Bank1 accessible over AXI                        */
+#define FLASH_END                 (0x0801FFFFUL) /*!< FLASH end address                                                                       */
 
 
 /* Legacy define */
@@ -2885,9 +2884,6 @@ typedef struct
 #define ADC_ISR_JQOVF_Pos                 (10U)
 #define ADC_ISR_JQOVF_Msk                 (0x1UL << ADC_ISR_JQOVF_Pos)         /*!< 0x00000400 */
 #define ADC_ISR_JQOVF                     ADC_ISR_JQOVF_Msk                    /*!< ADC Injected Context Queue Overflow flag */
-#define ADC_ISR_LDORDY_Pos                 (12U)
-#define ADC_ISR_LDORDY_Msk                 (0x1UL << ADC_ISR_LDORDY_Pos)         /*!< 0x00001000 */
-#define ADC_ISR_LDORDY                     ADC_ISR_LDORDY_Msk                    /*!< ADC LDO Ready (LDORDY) flag  */
 
 /********************  Bit definition for ADC_IER register  ********************/
 #define ADC_IER_ADRDYIE_Pos               (0U)
@@ -11050,12 +11046,12 @@ typedef struct
 * @brief FLASH Global Defines
 */
 #define FLASH_SIZE_DATA_REGISTER             0x1FF1E880U
-#define FLASH_SECTOR_TOTAL                   8U                    /* 8 sectors */
-#define FLASH_SIZE                           ((((*((uint16_t *)FLASH_SIZE_DATA_REGISTER)) == 0xFFFFU)) ? 0x100000U : \
-                                             ((((*((uint16_t *)FLASH_SIZE_DATA_REGISTER)) == 0x0000U)) ? 0x100000U : \
-                                             (((uint32_t)(*((uint16_t *)FLASH_SIZE_DATA_REGISTER)) & (0x0FFFU)) << 10U)))  /* 1 MB   */
-#define FLASH_BANK_SIZE                      FLASH_SIZE            /* 1 MB   */
-#define FLASH_SECTOR_SIZE                    0x00020000UL          /* 128 KB   */
+#define FLASH_SECTOR_TOTAL                   1U                    /* 1 sector */
+#define FLASH_SECTOR_SIZE                    0x00020000UL          /* 128 KB */
+#define FLASH_SIZE                           ((((*((uint16_t *)FLASH_SIZE_DATA_REGISTER)) == 0xFFFFU)) ? 0x20000U : \
+                                             ((((*((uint16_t *)FLASH_SIZE_DATA_REGISTER)) == 0x0000U)) ? 0x20000U : \
+                                             (((uint32_t)(*((uint16_t *)FLASH_SIZE_DATA_REGISTER)) & (0x0FFFU)) << 10U)))  /* 128 KB   */
+#define FLASH_BANK_SIZE                      FLASH_SIZE            /* 128 KB */
 #define FLASH_LATENCY_DEFAULT                FLASH_ACR_LATENCY_7WS /* FLASH Seven Latency cycles */
 #define FLASH_NB_32BITWORD_IN_FLASHWORD      8U                    /* 256 bits */
 
@@ -14641,26 +14637,15 @@ typedef struct
 #define PWR_CR3_USB33DEN_Pos           (24U)
 #define PWR_CR3_USB33DEN_Msk           (0x1UL << PWR_CR3_USB33DEN_Pos)         /*!< 0x01000000 */
 #define PWR_CR3_USB33DEN               PWR_CR3_USB33DEN_Msk                    /*!< VDD33_USB voltage level detector enable */
-#define PWR_CR3_SMPSEXTRDY_Pos         (16U)
-#define PWR_CR3_SMPSEXTRDY_Msk         (0x1UL << PWR_CR3_SMPSEXTRDY_Pos)       /*!< 0x00010000 */
-#define PWR_CR3_SMPSEXTRDY             PWR_CR3_SMPSEXTRDY_Msk                  /*!< SMPS External supply ready */
 #define PWR_CR3_VBRS_Pos               (9U)
 #define PWR_CR3_VBRS_Msk               (0x1UL << PWR_CR3_VBRS_Pos)             /*!< 0x00000200 */
 #define PWR_CR3_VBRS                   PWR_CR3_VBRS_Msk                        /*!< VBAT charging resistor selection */
 #define PWR_CR3_VBE_Pos                (8U)
 #define PWR_CR3_VBE_Msk                (0x1UL << PWR_CR3_VBE_Pos)              /*!< 0x00000100 */
 #define PWR_CR3_VBE                    PWR_CR3_VBE_Msk                         /*!< VBAT charging enable */
-#define PWR_CR3_SMPSLEVEL_Pos          (4U)
-#define PWR_CR3_SMPSLEVEL_Msk          (0x3UL << PWR_CR3_SMPSLEVEL_Pos)        /*!< 0x00000030 */
-#define PWR_CR3_SMPSLEVEL              PWR_CR3_SMPSLEVEL_Msk                   /*!< SMPS output Voltage */
-#define PWR_CR3_SMPSLEVEL_0            (0x1UL << PWR_CR3_SMPSLEVEL_Pos)        /*!< 0x00000010 */
-#define PWR_CR3_SMPSLEVEL_1            (0x2UL << PWR_CR3_SMPSLEVEL_Pos)        /*!< 0x00000020 */
-#define PWR_CR3_SMPSEXTHP_Pos          (3U)
-#define PWR_CR3_SMPSEXTHP_Msk          (0x1UL << PWR_CR3_SMPSEXTHP_Pos)        /*!< 0x00000008 */
-#define PWR_CR3_SMPSEXTHP              PWR_CR3_SMPSEXTHP_Msk                   /*!< SMPS forced ON and in High Power MR mode */
-#define PWR_CR3_SMPSEN_Pos             (2U)
-#define PWR_CR3_SMPSEN_Msk             (0x1UL << PWR_CR3_SMPSEN_Pos)           /*!< 0x00000004 */
-#define PWR_CR3_SMPSEN                 PWR_CR3_SMPSEN_Msk                      /*!< SMPS Enable */
+#define PWR_CR3_SCUEN_Pos              (2U)
+#define PWR_CR3_SCUEN_Msk              (0x1UL << PWR_CR3_SCUEN_Pos)            /*!< 0x00000004 */
+#define PWR_CR3_SCUEN                  PWR_CR3_SCUEN_Msk                       /*!< Supply configuration update enable */
 #define PWR_CR3_LDOEN_Pos              (1U)
 #define PWR_CR3_LDOEN_Msk              (0x1UL << PWR_CR3_LDOEN_Pos)            /*!< 0x00000002 */
 #define PWR_CR3_LDOEN                  PWR_CR3_LDOEN_Msk                       /*!< Low Drop Output regulator enable */
@@ -24478,7 +24463,7 @@ typedef struct
    ((INSTANCE) == TIM23)   || \
    ((INSTANCE) == TIM24))
 
-/****************** TIM Instances : supporting internal trigger inputstr(ITRX) *******/
+/****************** TIM Instances : supporting internal trigger inputs(ITRX) *******/
 #define IS_TIM_CLOCKSOURCE_ITRX_INSTANCE(INSTANCE)\
   (((INSTANCE) == TIM1)    || \
    ((INSTANCE) == TIM2)    || \
@@ -24699,22 +24684,22 @@ typedef struct
 /******************************************************************************/
 
 /* Aliases for __IRQn */
-//#define  HASH_RNG_IRQn                  RNG_IRQn
-//#define  TIM1_BRK_TIM9_IRQn             TIM1_BRK_IRQn
+#define  RNG_IRQn                       HASH_RNG_IRQn
+#define  TIM1_BRK_TIM9_IRQn             TIM1_BRK_IRQn
 #define  TIM1_UP_TIM10_IRQn             TIM1_UP_IRQn
-//#define  TIM1_TRG_COM_TIM11_IRQn        TIM1_TRG_COM_IRQn
-//#define  PVD_IRQn                       PVD_AVD_IRQn
+#define  TIM1_TRG_COM_TIM11_IRQn        TIM1_TRG_COM_IRQn
+#define  PVD_IRQn                       PVD_AVD_IRQn
 
 
 /* Aliases for DCMI/PSSI __IRQn */
 #define  DCMI_IRQn                      DCMI_PSSI_IRQn
 
 /* Aliases for __IRQHandler */
-//#define  HASH_RNG_IRQHandler           RNG_IRQHandler
-//#define TIM1_BRK_TIM9_IRQHandler       TIM1_BRK_IRQHandler
+#define   RNG_IRQHandler               HASH_RNG_IRQHandler
+#define TIM1_BRK_TIM9_IRQHandler       TIM1_BRK_IRQHandler
 #define TIM1_UP_TIM9_IRQHandler        TIM1_UP_IRQHandler
-//#define TIM1_TRG_COM_TIM11_IRQHandler  TIM1_TRG_COM_IRQHandler
-//#define PVD_IRQHandler                 PVD_AVD_IRQHandler
+#define TIM1_TRG_COM_TIM11_IRQHandler  TIM1_TRG_COM_IRQHandler
+#define PVD_IRQHandler                 PVD_AVD_IRQHandler
 
 /* Aliases for COMP __IRQHandler */
 #define COMP_IRQHandler                COMP1_IRQHandler
@@ -24735,6 +24720,6 @@ typedef struct
 }
 #endif /* __cplusplus */
 
-#endif /* STM32H735xx_H */
+#endif /* STM32H730xx_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

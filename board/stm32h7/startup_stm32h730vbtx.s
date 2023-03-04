@@ -1,8 +1,8 @@
 /**
   ******************************************************************************
-  * @file      startup_stm32h735xx.s
+  * @file      startup_stm32h730xx.s
   * @author    MCD Application Team
-  * @brief     STM32H735xx Devices vector table for GCC based toolchain.
+  * @brief     STM32H730xx Devices vector table for GCC based toolchain.
   *            This module performs:
   *                - Set the initial SP
   *                - Set the initial PC == Reset_Handler,
@@ -60,7 +60,7 @@ defined in linker script */
   .type  Reset_Handler, %function
 Reset_Handler:
   ldr   sp, =_estack      /* set stack pointer */
-  bl __initialize_hardware_early
+  bl  __initialize_hardware_early
 
 /* Copy the data segment initializers from flash to SRAM */
   ldr r0, =_sdata
@@ -91,11 +91,9 @@ FillZerobss:
 LoopFillZerobss:
   cmp r2, r4
   bcc FillZerobss
-  
-/* Call the clock system intitialization function.*/
-  /* bl  SystemInit    */
+
 /* Call static constructors */
-    /* bl __libc_init_array */
+  //  bl __libc_init_array
 /* Call the application's entry point.*/
   bl  main
   bx  lr

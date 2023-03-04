@@ -283,7 +283,7 @@ void soft_flasher_start(void) {
   llcan_init(CAN1);
 #endif
 
-  gpio_usart2_init();
+  gpio_usart1_init();
   gpio_usb_init();
 
   // enable USB

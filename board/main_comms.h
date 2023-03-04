@@ -8,35 +8,35 @@ int get_health_pkt(void *dat) {
   COMPILE_TIME_ASSERT(sizeof(struct health_t) <= USBPACKET_MAX_SIZE);
   struct health_t * health = (struct health_t*)dat;
 
-  health->uptime_pkt = uptime_cnt;
-  health->voltage_pkt = adc_get_voltage();
-  health->current_pkt = current_board->read_current();
+  health->uptime_pkt = 0;
+  health->voltage_pkt = 0;
+  health->current_pkt = 0;
 
   //Use the GPIO pin to determine ignition or use a CAN based logic
-  health->ignition_line_pkt = (uint8_t)(current_board->check_ignition());
-  health->ignition_can_pkt = (uint8_t)(ignition_can);
+  health->ignition_line_pkt = 1;
+  health->ignition_can_pkt = 1;
 
-  health->controls_allowed_pkt = controls_allowed;
-  health->gas_interceptor_detected_pkt = gas_interceptor_detected;
-  health->safety_tx_blocked_pkt = safety_tx_blocked;
-  health->safety_rx_invalid_pkt = safety_rx_invalid;
-  health->tx_buffer_overflow_pkt = tx_buffer_overflow;
-  health->rx_buffer_overflow_pkt = rx_buffer_overflow;
-  health->gmlan_send_errs_pkt = gmlan_send_errs;
-  health->car_harness_status_pkt = car_harness_status;
-  health->safety_mode_pkt = (uint8_t)(current_safety_mode);
-  health->safety_param_pkt = current_safety_param;
-  health->alternative_experience_pkt = alternative_experience;
-  health->power_save_enabled_pkt = (uint8_t)(power_save_status == POWER_SAVE_STATUS_ENABLED);
-  health->heartbeat_lost_pkt = (uint8_t)(heartbeat_lost);
-  health->safety_rx_checks_invalid = safety_rx_checks_invalid;
+  health->controls_allowed_pkt = 1;
+  health->gas_interceptor_detected_pkt = 0;
+  health->safety_tx_blocked_pkt = 0;
+  health->safety_rx_invalid_pkt = 0;
+  health->tx_buffer_overflow_pkt = 0;
+  health->rx_buffer_overflow_pkt = 0;
+  health->gmlan_send_errs_pkt = 0;
+  health->car_harness_status_pkt = 0;
+  health->safety_mode_pkt = 0;
+  health->safety_param_pkt = 0;
+  health->alternative_experience_pkt = 0;
+  health->power_save_enabled_pkt = 0;
+  health->heartbeat_lost_pkt = 0;
+  health->safety_rx_checks_invalid = 0;
 
-  health->fault_status_pkt = fault_status;
-  health->faults_pkt = faults;
+  health->fault_status_pkt = 0;
+  health->faults_pkt = 0;
 
-  health->interrupt_load = interrupt_load;
+  health->interrupt_load = 0.0;
 
-  health->fan_power = fan_state.power;
+  health->fan_power = 20;
 
   return sizeof(*health);
 }

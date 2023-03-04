@@ -58,7 +58,6 @@ void tres_init(void) {
   tres_set_bootkick(true);
 
   // SOM debugging UART
-  gpio_uart7_init();
   uart_init(&uart_ring_som_debug, 115200);
 
   // SPI init

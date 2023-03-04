@@ -3,7 +3,7 @@
 #define MCU_IDCODE 0x483U
 
 // from the linker script
-#define APP_START_ADDRESS 0x8020000U
+#define APP_START_ADDRESS 0x8000000U
 
 #define CORE_FREQ 240U // in Mhz
 //APB1 - 120Mhz, APB2 - 120Mhz
@@ -78,8 +78,8 @@
 
 #include "stm32h7/llusb.h"
 
-#include "drivers/spi.h"
-#include "stm32h7/llspi.h"
+//#include "drivers/spi.h"
+//#include "stm32h7/llspi.h"
 
 void early_gpio_float(void) {
   RCC->AHB4ENR = RCC_AHB4ENR_GPIOAEN | RCC_AHB4ENR_GPIOBEN | RCC_AHB4ENR_GPIOCEN | RCC_AHB4ENR_GPIODEN | RCC_AHB4ENR_GPIOEEN | RCC_AHB4ENR_GPIOFEN | RCC_AHB4ENR_GPIOGEN | RCC_AHB4ENR_GPIOHEN;
